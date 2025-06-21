@@ -1,0 +1,12 @@
+# Project place file
+/roblox-rojo-wally-template.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+DevPackages/
+Packages/
+ServerPackages/
+sourcemap.json
+wally.lock

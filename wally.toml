@@ -1,0 +1,19 @@
+[package]
+name = "user/roblox-rojo-wally-template"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+private = true
+
+[dependencies]
+Knit = "sleitnick/knit@1.7.0"
+Roact = "roblox/roact@1.4.4"
+Promise = "evaera/promise@4.0.0"
+Janitor = "howmanysmall/janitor@1.18.3"
+
+[server-dependencies]
+ProfileService = "firebird702/profileservice@1.1.0"
+ReplicaService = "etheroit/replicaservice@1.0.2"
+
+[dev-dependencies]
+TestEZ = "roblox/testez@0.4.1"
