@@ -10,6 +10,7 @@ Knit = "sleitnick/knit@1.7.0"
 Roact = "roblox/roact@1.4.4"
 Promise = "evaera/promise@4.0.0"
 Janitor = "howmanysmall/janitor@1.18.3"
+Cmdr = "evaera/cmdr@1.12.0"
 
 [server-dependencies]
 ProfileService = "firebird702/profileservice@1.1.0"
