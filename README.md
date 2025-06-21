@@ -1,3 +1,5 @@
+[English](README.md) [日本語](README.ja.md)
+
 # What is this?
 
 This is a template for a modern development environment for Roblox (Luau) using VSCode.
