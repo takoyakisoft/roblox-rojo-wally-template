@@ -8,13 +8,14 @@ private = true
 [dependencies]
 React = "jsdotlua/react@17.1.0"
 ReactRoblox = "jsdotlua/react-roblox@17.2.1"
+TopbarPlus = "1foreverhd/topbarplus@3.3.1"
+Cmdr = "evaera/cmdr@1.12.0"
+BridgeNet2 = "ffrostflame/bridgenet2@1.0.0"
 Promise = "evaera/promise@4.0.0"
 Janitor = "howmanysmall/janitor@1.18.3"
-Cmdr = "evaera/cmdr@1.12.0"
 
 [server-dependencies]
-ProfileService = "firebird702/profileservice@1.1.0"
-ReplicaService = "etheroit/replicaservice@1.0.2"
+ProfileService = "lm-loleris/profilestore@1.0.3"
 
 [dev-dependencies]
 TestEZ = "roblox/testez@0.4.1"
