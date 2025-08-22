@@ -33,9 +33,7 @@ curl -fsSL https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install
 ## RojoやWallyなどのインストール
 
 ```bash
-rokit add rojo
-rokit add wally
-rokit add wally-package-types
+rokit install
 ```
 
 ## パッケージのインストール
@@ -45,7 +43,6 @@ wally install
 rojo sourcemap default.project.json --output sourcemap.json
 wally-package-types -s sourcemap.json Packages/
 wally-package-types -s sourcemap.json ServerPackages/
-wally-package-types -s sourcemap.json DevPackages/
 ```
 
 ## VSCode拡張機能のインストール
@@ -61,14 +58,14 @@ wally-package-types -s sourcemap.json DevPackages/
 
 ## VSCodeからRojo
 
-「Ctrl + Shift + P」
+`Ctrl + Shift + P`
 
-「Rojo: Open Menu」
+`Rojo: Open Menu`
 
 > [!NOTE]
 > 初めてならRoblox Studioを起動して、Install Roblox Studio Plugin
 
-「▶ default.project.json」
+`▶ default.project.json`
 
 
 ## Roblox StudioからRojo
@@ -81,20 +78,19 @@ wally-package-types -s sourcemap.json DevPackages/
 
 ## Wallyにパッケージを追加
 
-wally.tomlをVSCodeで編集します。
+`wally.toml`をVSCodeで編集します。
 
 [wally.run](https://wally.run/)のサイトで欲しいパッケージを調べて「Install」でパッケージ名をコピーします。
 
 各セクションの分類は
 
-[dependencies]がクライアントとサーバー
+`[dependencies]`がReplicatedStorage(クライアントとサーバー)
 
-[server-dependencies]がサーバーのみ
-
-[dev-dependencies]が開発やテストのみ
+`[server-dependencies]`がStarterPlayerScripts(サーバーでProfileStoreとCmdr用)
 
 書き終えたら、再度[パッケージのインストール](#パッケージのインストール)を行います。
 
 # 参考
 
 [How Big Studios Develop on Roblox](https://www.youtube.com/watch?v=IJDg6tRJmHo)
+[【Roblox】VS Codeでの開発環境構築（Rokit + Rojo + Wally）【Cursor対応】](https://zenn.dev/ambr_inc/articles/15bef38a830a2e)

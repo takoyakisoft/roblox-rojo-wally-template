@@ -35,9 +35,7 @@ curl -fsSL https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install
 ## Installing Rojo, Wally, etc.
 
 ```bash
-rokit add rojo
-rokit add wally
-rokit add wally-package-types
+rokit install
 ```
 
 ## Installing Packages
@@ -47,7 +45,6 @@ wally install
 rojo sourcemap default.project.json --output sourcemap.json
 wally-package-types -s sourcemap.json Packages/
 wally-package-types -s sourcemap.json ServerPackages/
-wally-package-types -s sourcemap.json DevPackages/
 ```
 
 ## Installing VSCode Extensions
@@ -87,12 +84,13 @@ Find the package you want on [wally.run](https://wally.run/) and copy its name f
 
 The sections are categorized as follows:
 
-`[dependencies]` is for both client and server.
-`[server-dependencies]` is for server-only.
-`[dev-dependencies]` is for development and testing only.
+`[dependencies]` is ReplicatedStorage (client and server)
+
+`[server-dependencies]` is StarterPlayerScripts (for ProfileStore and Cmdr on the server)
 
 Once you've finished editing, run the [package installation](#installing-packages) steps again.
 
 # References
 
 [How Big Studios Develop on Roblox](https://www.youtube.com/watch?v=IJDg6tRJmHo)
+[[Roblox] Building a development environment with VS Code (Rokit + Rojo + Wally) [Cursor support]](https://zenn.dev/ambr_inc/articles/15bef38a830a2e)
