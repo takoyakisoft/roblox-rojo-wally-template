@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://roblox.github.io/testez/getting-started/running-tests/
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

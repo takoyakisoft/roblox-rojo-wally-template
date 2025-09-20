@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://ffrostfall.github.io/ByteNet/api/functions/definePacket/
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

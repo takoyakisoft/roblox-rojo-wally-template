@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://madstudioroblox.github.io/ProfileStore/tutorial/
 
 local ServerScriptService = game:GetService("ServerScriptService")

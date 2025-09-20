@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://github.com/boatbomber/WindShake/blob/main/demo/client/WindController/init.client.lua
 
 local WIND_DIRECTION = Vector3.new(1, 0, 0.3)

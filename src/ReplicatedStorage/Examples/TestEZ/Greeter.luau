@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://roblox.github.io/testez/getting-started/writing-tests/
 
 local Greeter = {}

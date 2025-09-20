@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://eryn.io/roblox-lua-promise/docs/Tour
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://github.com/boatbomber/WindShake/blob/main/demo/client/WindController/WindLines.lua
 
 local RunService = game:GetService("RunService")

@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://eryn.io/Cmdr/guide/Setup.html
 
 -- This is a script you would create in ServerScriptService, for example.

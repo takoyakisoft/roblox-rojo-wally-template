@@ -1,3 +1,5 @@
+--!native
+--!optimize 2
 -- https://howmanysmall.github.io/Janitor/api/Janitor#LinkToInstance
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
