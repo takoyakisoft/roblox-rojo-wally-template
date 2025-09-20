@@ -6,9 +6,8 @@ local WIND_POWER = 0.5
 local SHAKE_DISTANCE = 150
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Packages = ReplicatedStorage:WaitForChild("Packages")
 local WindLines = require(script.WindLines)
-local WindShake = require(Packages.WindShake)
+local WindShake = require(ReplicatedStorage.Packages.WindShake)
 
 WindLines:Init({
 	Direction = WIND_DIRECTION,
@@ -29,9 +28,9 @@ WindShake:Init({
 -- We told it to match the workspace wind, so it'll have computed
 -- new default settings based on workspace.GlobalWind.
 -- To make sure our dev guis match this, we'll read back the default settings.
-local WindSpeed = Packages.WindShake:GetAttribute("WindSpeed")
-local WindDirection = Packages.WindShake:GetAttribute("WindDirection")
-local WindPower = Packages.WindShake:GetAttribute("WindPower")
+local WindSpeed = ReplicatedStorage.Packages.WindShake:GetAttribute("WindSpeed")
+local WindDirection = ReplicatedStorage.Packages.WindShake:GetAttribute("WindDirection")
+local WindPower = ReplicatedStorage.Packages.WindShake:GetAttribute("WindPower")
 if WindSpeed then
 	WIND_SPEED = WindSpeed
 end

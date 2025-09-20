@@ -1,4 +1,5 @@
 {
+  "emitLegacyScripts": false,
   "name": "roblox-rojo-wally-template",
   "servePort": 34872,
   "tree": {
@@ -9,34 +10,16 @@
       "$path": "src/ReplicatedStorage",
       "Packages": {
         "$path": "Packages"
+      },
+      "DevPackages": {
+        "$path": "DevPackages"
       }
-    },
-    "ReplicatedFirst": {
-      "$className": "ReplicatedFirst",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ReplicatedFirst"
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "$path": "src/ServerScriptService",
       "ServerPackages": {
         "$path": "ServerPackages"
-      }
-    },
-    "ServerStorage": {
-      "$className": "ServerStorage",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ServerStorage"
-    },
-    "StarterPlayer": {
-      "$className": "StarterPlayer",
-      "StarterCharacterScripts": {
-        "$className": "StarterCharacterScripts",
-        "$path": "src/StarterPlayer/StarterCharacterScripts"
-      },
-      "StarterPlayerScripts": {
-        "$className": "StarterPlayerScripts",
-        "$path": "src/StarterPlayer/StarterPlayerScripts"
       }
     }
   }

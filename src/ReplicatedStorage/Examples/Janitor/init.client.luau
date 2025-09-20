@@ -1,9 +1,7 @@
 -- https://howmanysmall.github.io/Janitor/api/Janitor#LinkToInstance
 
-local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Packages = ReplicatedStorage:WaitForChild("Packages")
-local Janitor = require(Packages.Janitor)
+local Janitor = require(ReplicatedStorage.Packages.Janitor)
 
 local obliterator = Janitor.new()
 
@@ -13,7 +11,7 @@ end, true)
 
 do
 	local folder = Instance.new("Folder")
-	folder.Parent = Workspace
+	folder.Parent = workspace
 	obliterator:LinkToInstance(folder)
 
 	local part = Instance.new("Part")

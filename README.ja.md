@@ -7,9 +7,7 @@ Roblox（Luau）でVSCodeを使ったモダンな開発環境のテンプレー�
 - フォーマッター: [StyLua](https://github.com/JohnnyMorganz/StyLua)
 - パッケージマネージャー: [Wally](https://github.com/UpliftGames/wally)
 - RojoとWallyのマネージャー:　[Rokit](https://github.com/rojo-rbx/rokit)
-
-> [!WARNING]
-> CI/CDは入ってないです: [CI/CD](https://github.com/Roblox/place-ci-cd-demo)
+- CI/CD: [place-ci-cd-demo](https://github.com/Roblox/place-ci-cd-demo)
 
 # インストール
 
@@ -43,6 +41,7 @@ wally install
 rojo sourcemap default.project.json --output sourcemap.json
 wally-package-types -s sourcemap.json Packages/
 wally-package-types -s sourcemap.json ServerPackages/
+wally-package-types -s sourcemap.json DevPackages/
 ```
 
 ## VSCode拡張機能のインストール

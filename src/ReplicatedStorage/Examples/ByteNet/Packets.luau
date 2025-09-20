@@ -1,8 +1,7 @@
 -- https://ffrostfall.github.io/ByteNet/api/functions/definePacket/
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Packages = ReplicatedStorage:WaitForChild("Packages")
-local ByteNet = require(Packages.ByteNet)
+local ByteNet = require(ReplicatedStorage.Packages.ByteNet)
 
 return ByteNet.defineNamespace("messaging", function()
 	return {

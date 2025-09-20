@@ -1,9 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Packages = ReplicatedStorage:WaitForChild("Packages")
 local Players = game:GetService("Players")
 
-local React = require(Packages.React)
-local ReactRoblox = require(Packages.ReactRoblox)
+local React = require(ReplicatedStorage.Packages.React)
+local ReactRoblox = require(ReplicatedStorage.Packages.ReactRoblox)
 
 local function CounterWithClose()
 	local count, setCount = React.useState(0)

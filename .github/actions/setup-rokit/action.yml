@@ -1,0 +1,56 @@
+name: Setup Rokit tools and Wally deps
+description: Install rokit + tools, warm caches, generate sourcemap/types
+runs:
+  using: composite
+  steps:
+    - name: Restore Rokit cache
+      id: rokit-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.rokit
+        key: rokit-${{ runner.os }}-${{ hashFiles('**/rokit.toml') }}
+
+    - name: Install Rokit (if no cache)
+      if: steps.rokit-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+
+    - name: Add Rokit to PATH
+      shell: bash
+      run: echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
+
+    - name: Install rokit tools
+      shell: bash
+      run: rokit install --no-trust-check
+
+    - name: Cache Wally global cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/wally
+        key: wally-global-${{ runner.os }}-${{ hashFiles('**/wally.lock') }}
+        restore-keys: |
+          wally-global-${{ runner.os }}-
+
+    - name: Wally install
+      shell: bash
+      run: wally install
+
+    - name: Generate Rojo sourcemap
+      shell: bash
+      run: rojo sourcemap default.project.json --output sourcemap.json
+
+    - name: Generate package types
+      shell: bash
+      run: |
+        set -euo pipefail
+        for d in Packages ServerPackages DevPackages; do
+          if [ -d "$d" ]; then
+            wally-package-types -s sourcemap.json "$d"
+          fi
+        done
+
+    - name: Add headers (optional)
+      shell: bash
+      run: python3 scripts/python/add_headers.py

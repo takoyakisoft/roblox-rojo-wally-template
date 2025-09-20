@@ -1,0 +1,53 @@
+name: CI checks + deployment
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  linting:
+    name: Lint with Selene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-rokit
+      - run: chmod +x scripts/shell/lint.sh
+      - run: ./scripts/shell/lint.sh src
+
+  formatting:
+    name: Format with StyLua
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-rokit
+      - run: chmod +x scripts/shell/check-format.sh
+      - run: ./scripts/shell/check-format.sh src
+
+  luau-tests:
+    name: Run Luau tests via Open Cloud
+    runs-on: ubuntu-latest
+    concurrency:
+      group: luau-execution
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-rokit
+      - run: chmod +x scripts/shell/test.sh
+      - run: ./scripts/shell/test.sh default.project.json $TEST_TASK_FILE
+        env:
+          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+          ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_TEST_UNIVERSE_ID }}
+          ROBLOX_PLACE_ID: ${{ vars.ROBLOX_TEST_PLACE_ID }}
+          TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.luau
+
+  deployment:
+    name: Deployment
+    runs-on: ubuntu-latest
+    needs: [linting, formatting, luau-tests] # 全部通ってから
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-rokit
+      - run: rojo upload default.project.json --api_key ${{ secrets.ROBLOX_API_KEY }} --universe_id ${{ vars.ROBLOX_PRODUCTION_UNIVERSE_ID }} --asset_id ${{ vars.ROBLOX_PRODUCTION_PLACE_ID }}

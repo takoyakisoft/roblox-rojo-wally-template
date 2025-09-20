@@ -6,15 +6,18 @@ realm = "shared"
 private = true
 
 [dependencies]
-React = "jsdotlua/react@17.1.0"
-ReactRoblox = "jsdotlua/react-roblox@17.2.1"
-TopbarPlus = "1foreverhd/topbarplus@3.3.1"
-WindShake = "boatbomber/windshake@2.0.3"
-ByteNet = "ffrostflame/bytenet@0.4.6"
-Promise = "evaera/promise@4.0.0"
-Janitor = "howmanysmall/janitor@1.18.3"
-TestEZ = "roblox/testez@0.4.1"
+React = "jsdotlua/react@*"
+ReactRoblox = "jsdotlua/react-roblox@*"
+Satchel = "ryanlua/satchel@*"
+WindShake = "boatbomber/windshake@*"
+ByteNet = "ffrostflame/bytenet@*"
+Promise = "evaera/promise@*"
+Janitor = "howmanysmall/janitor@*"
 
 [server-dependencies]
-Cmdr = "evaera/cmdr@1.12.0"
-ProfileStore = "lm-loleris/profilestore@1.0.3"
+Cmdr = "evaera/cmdr@*"
+ProfileStore = "lm-loleris/profilestore@*"
+
+[dev-dependencies]
+UILabs = "pepeeltoro41/ui-labs@*"
+TestEZ = "roblox/testez@*"

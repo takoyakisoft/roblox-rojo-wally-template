@@ -9,9 +9,7 @@ This is a template for a modern development environment for Roblox (Luau) using 
 - Formatter: [StyLua](https://github.com/JohnnyMorganz/StyLua)
 - Package Manager: [Wally](https://github.com/UpliftGames/wally)
 - Manager for Rojo and Wally: [Rokit](https://github.com/rojo-rbx/rokit)
-
-> [!WARNING]
-> CI/CD is not included: [CI/CD](https://github.com/Roblox/place-ci-cd-demo)
+- CI/CD: [place-ci-cd-demo](https://github.com/Roblox/place-ci-cd-demo)
 
 # Installation
 
@@ -45,6 +43,7 @@ wally install
 rojo sourcemap default.project.json --output sourcemap.json
 wally-package-types -s sourcemap.json Packages/
 wally-package-types -s sourcemap.json ServerPackages/
+wally-package-types -s sourcemap.json DevPackages/
 ```
 
 ## Installing VSCode Extensions

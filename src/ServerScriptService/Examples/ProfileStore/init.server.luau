@@ -1,8 +1,7 @@
 -- https://madstudioroblox.github.io/ProfileStore/tutorial/
 
 local ServerScriptService = game:GetService("ServerScriptService")
-local ServerPackages = ServerScriptService:WaitForChild("ServerPackages")
-local ProfileStore = require(ServerPackages.ProfileStore)
+local ProfileStore = require(ServerScriptService.ServerPackages.ProfileStore)
 
 -- The PROFILE_TEMPLATE table is what new profile "Profile.Data" will default to:
 local PROFILE_TEMPLATE = {
