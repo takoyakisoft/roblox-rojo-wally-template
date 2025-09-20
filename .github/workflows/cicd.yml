@@ -23,15 +23,10 @@ jobs:
       - name: Setup Rokit
         uses: ./.github/actions/setup-rokit
 
-      - name: Format with StyLua (on PR)
-        if: github.event_name == 'pull_request'
-        run: stylua src Packages ServerPackages
-
-      - name: Check format on main branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Format with StyLua
         run: |
-          chmod +x scripts/shell/check-format.sh
-          ./scripts/shell/check-format.sh src
+          chmod +x scripts/shell/format.sh
+          ./scripts/shell/format.sh src
 
       - name: Lint with Selene
         run: |
@@ -49,7 +44,6 @@ jobs:
           TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.luau
 
       - name: Commit and push formatting changes
-        if: github.event_name == 'pull_request'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
