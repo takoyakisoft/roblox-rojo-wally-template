@@ -43,19 +43,9 @@ jobs:
           ROBLOX_PLACE_ID: ${{ vars.ROBLOX_TEST_PLACE_ID }}
           TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.luau
 
-      - name: Commit and push formatting changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v6
 
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "Formatting changes detected. Committing and pushing..."
-            git add .
-            git commit -m "style: Automatically format Luau code"
-            git push
-          else
-            echo "No formatting changes to commit."
-          fi
 
   # deployment:
   #   name: Deployment
