@@ -46,7 +46,7 @@ jobs:
           ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
           ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_TEST_UNIVERSE_ID }}
           ROBLOX_PLACE_ID: ${{ vars.ROBLOX_TEST_PLACE_ID }}
-          TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.au
+          TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.luau
 
       - name: Commit and push formatting changes
         if: github.event_name == 'pull_request'
