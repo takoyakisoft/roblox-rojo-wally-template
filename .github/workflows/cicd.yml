@@ -33,15 +33,16 @@ jobs:
           chmod +x scripts/shell/lint.sh
           ./scripts/shell/lint.sh src
 
-      - name: Run Luau tests via Open Cloud
-        run: |
-          chmod +x scripts/shell/test.sh
-          ./scripts/shell/test.sh default.project.json $TEST_TASK_FILE
-        env:
-          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
-          ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_TEST_UNIVERSE_ID }}
-          ROBLOX_PLACE_ID: ${{ vars.ROBLOX_TEST_PLACE_ID }}
-          TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.luau
+      # Comment out, dangerous, because it will create a place from scratch and erase all existing places.
+      # - name: Run Luau tests via Open Cloud
+      #   run: |
+      #     chmod +x scripts/shell/test.sh
+      #     ./scripts/shell/test.sh default.project.json $TEST_TASK_FILE
+      #   env:
+      #     ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+      #     ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_TEST_UNIVERSE_ID }}
+      #     ROBLOX_PLACE_ID: ${{ vars.ROBLOX_TEST_PLACE_ID }}
+      #     TEST_TASK_FILE: src/ServerScriptService/Dev/TestRunner.server.luau
 
       # Commit all changed files back to the repository
       - uses: stefanzweifel/git-auto-commit-action@v6
