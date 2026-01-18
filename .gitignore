@@ -7,5 +7,6 @@ Packages/
 ServerPackages/
 sourcemap.json
 wally.lock
+test.rbxl
 
 __pycache__/

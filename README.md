@@ -1,5 +1,7 @@
 [English](README.md) [日本語](README.ja.md)
 
+![CI](https://github.com/takoyakisoft/roblox-rojo-wally-template/actions/workflows/ci.yml/badge.svg)
+
 # What is this?
 
 This is a template for a modern development environment for Roblox (Luau) using VSCode.
@@ -68,7 +70,6 @@ Select `Rojo: Open Menu`
 
 Select `▶ default.project.json`
 
-
 ## Rojo from Roblox Studio
 
 Go to the "Plugins" tab.
@@ -88,6 +89,23 @@ The sections are categorized as follows:
 `[server-dependencies]` is StarterPlayerScripts (for ProfileStore and Cmdr on the server)
 
 Once you've finished editing, run the [package installation](#installing-packages) steps again.
+
+# Testing
+
+This template supports headless testing using [Lune](https://github.com/lune-org/lune) and [TestEZ](https://github.com/Roblox/testez).
+
+The testing environment uses AI-generated Roblox API mocks (`tests/roblox_mocks.luau`) to simulate the Roblox environment in CI. These tests are intended primarily for logic verification and ensuring that basic functionality works as expected in a headless environment.
+
+To run tests locally:
+
+1. Build the test place:
+   ```bash
+   rojo build default.project.json -o test.rbxl
+   ```
+2. Run the test script:
+   ```bash
+   lune run tests/run_tests.luau
+   ```
 
 # References
 
