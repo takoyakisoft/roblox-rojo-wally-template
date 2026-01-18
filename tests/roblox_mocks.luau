@@ -1,11 +1,12 @@
 -- Auto-generated Roblox API mocks for Studio
 -- Includes WaitForChild polyfill
--- Generated on: 2026-01-18 20:36:42
+-- Generated on: 2026-01-18 20:45:40
 -- WaitForChild Polyfill Implementation
 local function createWaitForChildPolyfill()
 	return function(parent, childName, timeout)
-		if typeof(parent) ~= "Instance" then
-			error("WaitForChild: parent must be an Instance", 2)
+		-- Relaxed check for mock environment
+		if typeof(parent) ~= "Instance" and type(parent) ~= "table" and type(parent) ~= "userdata" then
+			error("WaitForChild: parent must be an Instance, table, or userdata", 2)
 		end
 
 		if type(childName) ~= "string" then
@@ -20,20 +21,27 @@ local function createWaitForChildPolyfill()
 		local startTime = tick()
 		local timeoutSeconds = timeout or 30
 		local foundChild = nil
-		local connection = parent.ChildAdded:Connect(function(child)
+		local connection
+		connection = parent.ChildAdded:Connect(function(child)
 			if child.Name == childName then
 				foundChild = child
-				connection:Disconnect()
+				if connection then
+					connection:Disconnect()
+					connection = nil
+				end
 			end
 		end)
 
 		while not foundChild do
 			if timeoutSeconds > 0 and (tick() - startTime) >= timeoutSeconds then
-				connection:Disconnect()
+				if connection then
+					connection:Disconnect()
+					connection = nil
+				end
 				return nil
 			end
 
-			wait(0.1)
+			task.wait(0.1)
 			local checkChild = parent:FindFirstChild(childName)
 			if checkChild then
 				foundChild = checkChild
@@ -52,7 +60,6 @@ end
 local serviceMocks = {}
 serviceMocks.BadgeService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -79,7 +86,6 @@ serviceMocks.BadgeService = {
 }
 serviceMocks.CoreGui = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -106,7 +112,6 @@ serviceMocks.CoreGui = {
 }
 serviceMocks.GroupService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -133,7 +138,6 @@ serviceMocks.GroupService = {
 }
 serviceMocks.ReplicatedFirst = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -160,7 +164,6 @@ serviceMocks.ReplicatedFirst = {
 }
 serviceMocks.StarterPack = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -187,7 +190,6 @@ serviceMocks.StarterPack = {
 }
 serviceMocks.Chat = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -214,7 +216,6 @@ serviceMocks.Chat = {
 }
 serviceMocks.ServerStorage = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -241,19 +242,17 @@ serviceMocks.ServerStorage = {
 }
 serviceMocks.Workspace = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
 	Terrain = {
-    MaxCellSize = 4,
-    CellCount = 512,
-  },
+		CellCount = 512,
+		MaxCellSize = 4,
+	},
 	CurrentCamera = {
-    CFrame = CFrame.new(),
-    FieldOfView = 70,
-    CameraSubject = nil,
-  },
+		CFrame = nil,
+		FieldOfView = 70,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -277,7 +276,6 @@ serviceMocks.Workspace = {
 }
 serviceMocks.StarterGui = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -304,7 +302,6 @@ serviceMocks.StarterGui = {
 }
 serviceMocks.TeleportService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -331,9 +328,12 @@ serviceMocks.TeleportService = {
 }
 serviceMocks.Players = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
-	PlayerRemoving = {},
-	PlayerAdded = {},
+	PlayerRemoving = {
+		Connect = function(...) end,
+	},
+	PlayerAdded = {
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -344,7 +344,11 @@ serviceMocks.Players = {
 	SetAttribute = function(...) end,
 	GetAttribute = function(...) end,
 	Destroy = function(...) end,
-	LocalPlayer = {},
+	LocalPlayer = {
+		GetCharacter = function(...) end,
+		WaitForChild = createWaitForChildPolyfill(),
+		GetMouse = function(...) end,
+	},
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
 	FindFirstChildWhichIsA = function(...) end,
@@ -362,7 +366,6 @@ serviceMocks.Players = {
 }
 serviceMocks.AssetService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -389,7 +392,6 @@ serviceMocks.AssetService = {
 }
 serviceMocks.PathfindingService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -416,7 +418,6 @@ serviceMocks.PathfindingService = {
 }
 serviceMocks.LeaderboardService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -442,43 +443,50 @@ serviceMocks.LeaderboardService = {
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.RunService = {
+	GetAttribute = function(...) end,
+	Stepped = {
+		Connect = function(...) end,
+		Wait = function(...) end,
+	},
+	Heartbeat = {
+		Connect = function(...) end,
+		Wait = function(...) end,
+	},
 	FindFirstChild = function(...) end,
 	IsClient = function(...) end,
+	IsRunning = function(...) end,
+	IsRunMode = function(...) end,
 	GetDescendants = function(...) end,
+	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
 	IsStudio = function(...) end,
 	IsServer = function(...) end,
-	RenderStepped = {},
-	Destroy = function(...) end,
-	GetAttribute = function(...) end,
-	WaitForChild = createWaitForChildPolyfill(),
-	GetPropertyChangedSignal = function(...) end,
-	GetAttributeChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
-	Stepped = {},
-	ClassName = "RunService",
-	GetAttributes = function(...) end,
-	Parent = nil,
-	GetChildren = function(...) end,
+	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
+	SetAttribute = function(...) end,
+	RenderStepped = {
+		Connect = function(...) end,
+		Wait = function(...) end,
+	},
+	Destroy = function(...) end,
 	Archivable = true,
 	GetFullName = function(...) end,
-	IsRunning = function(...) end,
+	WaitForChild = createWaitForChildPolyfill(),
 	FindFirstChildWhichIsA = function(...) end,
-	IsRunMode = function(...) end,
-	RobloxLocked = false,
-	FindFirstChildOfClass = function(...) end,
+	Name = "RunService",
+	GetAttributeChangedSignal = function(...) end,
+	GetPropertyChangedSignal = function(...) end,
+	FindFirstAncestorWhichIsA = function(...) end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
-	SetAttribute = function(...) end,
+	ClassName = "RunService",
 	FindFirstAncestor = function(...) end,
-	Heartbeat = {},
+	GetAttributes = function(...) end,
 	IsA = function(...) end,
-	Name = "RunService",
+	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.VoiceChatService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -505,7 +513,6 @@ serviceMocks.VoiceChatService = {
 }
 serviceMocks.TestService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	Checkpoint = function(...) end,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
@@ -535,7 +542,6 @@ serviceMocks.TestService = {
 }
 serviceMocks.ProximityPromptService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -562,7 +568,6 @@ serviceMocks.ProximityPromptService = {
 }
 serviceMocks.Lighting = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -589,7 +594,6 @@ serviceMocks.Lighting = {
 }
 serviceMocks.ServerScriptService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -616,7 +620,6 @@ serviceMocks.ServerScriptService = {
 }
 serviceMocks.AvatarEditorService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -643,7 +646,6 @@ serviceMocks.AvatarEditorService = {
 }
 serviceMocks.NetworkService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -670,7 +672,6 @@ serviceMocks.NetworkService = {
 }
 serviceMocks.MarketplaceService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -697,7 +698,6 @@ serviceMocks.MarketplaceService = {
 }
 serviceMocks.StudioService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -724,7 +724,6 @@ serviceMocks.StudioService = {
 }
 serviceMocks.MessagingService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -751,7 +750,6 @@ serviceMocks.MessagingService = {
 }
 serviceMocks.SocialService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -778,7 +776,6 @@ serviceMocks.SocialService = {
 }
 serviceMocks.UserInputService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -806,7 +803,6 @@ serviceMocks.UserInputService = {
 serviceMocks.HttpService = {
 	PostAsync = function(...) end,
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetAsync = function(...) end,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
@@ -836,7 +832,6 @@ serviceMocks.HttpService = {
 }
 serviceMocks.CollectionService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -863,7 +858,6 @@ serviceMocks.CollectionService = {
 }
 serviceMocks.StarterPlayer = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -890,7 +884,6 @@ serviceMocks.StarterPlayer = {
 }
 serviceMocks.GuiService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -917,7 +910,6 @@ serviceMocks.GuiService = {
 }
 serviceMocks.GamePassService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -944,7 +936,6 @@ serviceMocks.GamePassService = {
 }
 serviceMocks.LocalizationService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -971,7 +962,6 @@ serviceMocks.LocalizationService = {
 }
 serviceMocks.SoundService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -998,7 +988,6 @@ serviceMocks.SoundService = {
 }
 serviceMocks.InsertService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1025,7 +1014,6 @@ serviceMocks.InsertService = {
 }
 serviceMocks.MemoryStoreService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1052,7 +1040,6 @@ serviceMocks.MemoryStoreService = {
 }
 serviceMocks.DataStoreService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1081,7 +1068,6 @@ serviceMocks.DataStoreService = {
 }
 serviceMocks.FriendService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1108,7 +1094,6 @@ serviceMocks.FriendService = {
 }
 serviceMocks.Teams = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1135,7 +1120,6 @@ serviceMocks.Teams = {
 }
 serviceMocks.ContextActionService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1162,7 +1146,6 @@ serviceMocks.ContextActionService = {
 }
 serviceMocks.PointsService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1189,7 +1172,6 @@ serviceMocks.PointsService = {
 }
 serviceMocks.TweenService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1216,7 +1198,6 @@ serviceMocks.TweenService = {
 }
 serviceMocks.PhysicsService = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
@@ -1243,7 +1224,6 @@ serviceMocks.PhysicsService = {
 }
 serviceMocks.ReplicatedStorage = {
 	FindFirstChild = function(...) end,
-	Parent = nil,
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
