@@ -25,10 +25,35 @@ local mocksEnv = setmetatable({}, { __index = _G })
 -- Explicitly inject types into the mocks environment
 mocksEnv.CFrame = roblox.CFrame
 mocksEnv.Vector3 = roblox.Vector3
+mocksEnv.Vector2 = roblox.Vector2
+mocksEnv.Color3 = roblox.Color3
+mocksEnv.UDim2 = roblox.UDim2
+mocksEnv.UDim = roblox.UDim
 mocksEnv.Instance = roblox.Instance
 mocksEnv.Enum = roblox.Enum
 mocksEnv.task = task
 mocksEnv.wait = task.wait
+mocksEnv.tick = os.clock
+mocksEnv.os = os
+mocksEnv.string = string
+mocksEnv.table = table
+mocksEnv.math = math
+mocksEnv.typeof = typeof
+mocksEnv.type = type
+mocksEnv.print = print
+mocksEnv.warn = warn
+mocksEnv.error = error
+mocksEnv.unpack = table.unpack or unpack
+mocksEnv.setmetatable = setmetatable
+mocksEnv.getmetatable = getmetatable
+mocksEnv.newproxy = newproxy
+mocksEnv.pcall = pcall
+mocksEnv.xpcall = xpcall
+mocksEnv.ipairs = ipairs
+mocksEnv.pairs = pairs
+mocksEnv.next = next
+mocksEnv.tostring = tostring
+mocksEnv.tonumber = tonumber
 
 local mocksBytecode = luau.compile(mocksSource)
 local mocksFn = luau.load(mocksBytecode, { environment = mocksEnv })
