@@ -192,8 +192,7 @@ end
 
 -- 5. Execution
 local ReplicatedStorage = gameReal:GetService("ReplicatedStorage")
-local testezFolder = ReplicatedStorage.rbxts_include.node_modules["@rbxts"].testez
-local TestEZModule = testezFolder:FindFirstChild("init") or testezFolder:FindFirstChild("src")
+local TestEZModule = ReplicatedStorage.DevPackages.TestEZ
 
 if not TestEZModule then
 	error("TestEZ module not found!")
@@ -206,8 +205,7 @@ _G.workspace = GameProxy.Workspace
 _G.Enum = mocks.MockEnum
 
 local results = TestEZ.TestBootstrap:run({
-	GameProxy.ServerScriptService.TS,
-	GameProxy.ReplicatedStorage.TS,
+	GameProxy.ReplicatedStorage.Examples.TestEZ,
 })
 
 if results.failureCount > 0 or #results.errors > 0 then
