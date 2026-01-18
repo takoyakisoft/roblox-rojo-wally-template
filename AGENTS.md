@@ -67,4 +67,5 @@ This project is built using native **Luau** for Roblox development. It utilizes 
 - **Location**: Co-locate test files with source files using the `.spec.luau` extension (e.g., `MathUtils.luau` -> `MathUtils.spec.luau`).
 - **Execution**:
   - **Lune**: Uses `tests/roblox_mocks.luau` to simulate the Roblox API. Best for logic tests.
+    - **Note**: `tests/roblox_mocks.luau` is **auto-generated**. Do not modify it manually. If you need to update mocks, edit `tests/command/generate_mocks_studio.luau` and run it in Roblox Studio to regenerate the file.
   - **Studio**: Best for tests requiring physics, DataStores, or complex engine features.
