@@ -507,9 +507,10 @@ local function run()
 	end
 
 	addRoot("ReplicatedStorage", "Examples")
+	addRoot("ReplicatedStorage", "Tests")
 
 	if #testRoots == 0 then
-		warn("No 'TS' or 'Tests' folders found. Nothing to test.")
+		warn("No 'Tests' folders found. Nothing to test.")
 		luneProcess.exit(0)
 	end
 
