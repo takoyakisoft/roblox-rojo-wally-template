@@ -1,238 +1,556 @@
-local lune = require("@lune/fs")
-local roblox = require("@lune/roblox")
-local luau = require("@lune/luau")
-local process = require("@lune/process")
-local task = require("@lune/task")
+local luneFs = require("@lune/fs")
+local luneRoblox = require("@lune/roblox")
+local luneLuau = require("@lune/luau")
+local luneProcess = require("@lune/process")
+local luneTask = require("@lune/task")
+local luneStdio = require("@lune/stdio")
 
--- 0. Inject Roblox Globals into _G for general usage
-_G.CFrame = roblox.CFrame
-_G.Vector3 = roblox.Vector3
-_G.Vector2 = roblox.Vector2
-_G.Color3 = roblox.Color3
-_G.UDim2 = roblox.UDim2
-_G.UDim = roblox.UDim
-_G.Instance = roblox.Instance
-_G.Enum = roblox.Enum
-_G.task = task
-_G.wait = task.wait
-_G.tick = os.clock
+-- -----------------------------------------------------------------------------
+-- Pretty output / fatal
+-- -----------------------------------------------------------------------------
 
--- 1. Load the mock system MANUALLY to guarantee environment injection
--- Standard 'require' might not propagate _G or env changes as expected directly to top-level code in the module
-local mocksSource = lune.readFile("tests/roblox_mocks.luau")
-local mocksEnv = setmetatable({}, { __index = _G })
-
--- Explicitly inject types into the mocks environment
-mocksEnv.CFrame = roblox.CFrame
-mocksEnv.Vector3 = roblox.Vector3
-mocksEnv.Vector2 = roblox.Vector2
-mocksEnv.Color3 = roblox.Color3
-mocksEnv.UDim2 = roblox.UDim2
-mocksEnv.UDim = roblox.UDim
-mocksEnv.Instance = roblox.Instance
-mocksEnv.Enum = roblox.Enum
-mocksEnv.task = task
-mocksEnv.wait = task.wait
-mocksEnv.tick = os.clock
-mocksEnv.os = os
-mocksEnv.string = string
-mocksEnv.table = table
-mocksEnv.math = math
-mocksEnv.typeof = typeof
-mocksEnv.type = type
-mocksEnv.print = print
-mocksEnv.warn = warn
-mocksEnv.error = error
-mocksEnv.unpack = table.unpack or unpack
-mocksEnv.setmetatable = setmetatable
-mocksEnv.getmetatable = getmetatable
-mocksEnv.newproxy = newproxy
-mocksEnv.pcall = pcall
-mocksEnv.xpcall = xpcall
-mocksEnv.ipairs = ipairs
-mocksEnv.pairs = pairs
-mocksEnv.next = next
-mocksEnv.tostring = tostring
-mocksEnv.tonumber = tonumber
-
-local mocksBytecode = luau.compile(mocksSource)
-local mocksFn = luau.load(mocksBytecode, { environment = mocksEnv })
-local mocks = mocksFn()
-
--- 2. Load DataModel
-local file = lune.readFile("test.rbxl")
-local gameReal = roblox.deserializePlace(file)
-
--- 3. Create a more intelligent Proxy
-local function smartWrap(instance)
-	if typeof(instance) ~= "Instance" then
-		return instance
+local function writeColor(colorName: string)
+	if luneStdio and luneStdio.color and luneStdio.write then
+		luneStdio.write(luneStdio.color(colorName))
 	end
-
-	local proxy = newproxy(true)
-	local meta = getmetatable(proxy)
-
-	meta.__index = function(_, key)
-		if key == mocks.REAL_INSTANCE then
-			return instance
-		end
-
-		-- Intercept GetService to prefer real storage services over empty mocks
-		if key == "GetService" and instance:IsA("DataModel") then
-			return function(_, serviceName)
-				if mocks.serviceMocks[serviceName] then
-					return mocks.serviceMocks[serviceName]
-				end
-				return smartWrap(instance:GetService(serviceName))
-			end
-		end
-
-		-- Polyfill for methods missing in Lune's Instance
-		if key == "WaitForChild" then
-			return function(_, name)
-				return smartWrap(instance:FindFirstChild(name))
-			end
-		elseif key == "GetPropertyChangedSignal" then
-			return function()
-				return {
-					Connect = function()
-						return { Disconnect = function() end }
-					end,
-				}
-			end
-		end
-
-		-- Forward to real instance properties/methods
-		local val = instance[key]
-		if typeof(val) == "function" then
-			return function(_, ...)
-				local args = { ... }
-				for i, v in ipairs(args) do
-					if typeof(v) == "userdata" then
-						local m = getmetatable(v)
-						if m and m.__index then
-							local real = v[mocks.REAL_INSTANCE]
-							if real then
-								args[i] = real
-							end
-						end
-					end
-				end
-				local success, results = pcall(function()
-					return { val(instance, table.unpack(args)) }
-				end)
-				if not success then
-					-- Fallback for common missing methods in Lune
-					if key == "IsA" then
-						return false
-					end
-					error(results) -- results is error message string if failed
-				end
-				for i, r in ipairs(results) do
-					results[i] = smartWrap(r)
-				end
-				return table.unpack(results)
-			end
-		end
-
-		-- Ensure traversal methods also return wrapped instances
-		if key == "FindFirstChild" or key == "FindFirstChildOfClass" then
-			return function(_, name)
-				local child = instance[key](instance, name)
-				return smartWrap(child)
-			end
-		elseif key == "GetChildren" or key == "GetDescendants" then
-			return function()
-				local list = instance[key](instance)
-				for i, v in ipairs(list) do
-					list[i] = smartWrap(v)
-				end
-				return list
-			end
-		end
-
-		return smartWrap(val)
-	end
-
-	meta.__tostring = function()
-		return tostring(instance)
-	end
-	return proxy
 end
 
-local GameProxy = smartWrap(gameReal)
+local function resetColor()
+	writeColor("reset")
+end
 
--- 4. Module Loader
-local loadedModules = {}
-local NULL_SENTINEL = newproxy()
+local function fatal(message: string, details: any?)
+	writeColor("red")
+	print(message)
+	if details ~= nil then
+		print(details)
+	end
+	resetColor()
+	luneProcess.exit(1)
+end
 
-local function requireInstance(moduleScript)
-	if typeof(moduleScript) == "userdata" then
-		local real = moduleScript[mocks.REAL_INSTANCE]
-		if real then
-			moduleScript = real
-		end
+local function traceback(err: any): string
+	if debug and debug.traceback then
+		return debug.traceback(tostring(err), 2)
+	end
+	return tostring(err)
+end
+
+-- -----------------------------------------------------------------------------
+-- 1. Load mocks module (roblox_mocks.luau) with a stable environment
+-- -----------------------------------------------------------------------------
+
+local MOCKS_FILE = "tests/roblox_mocks.luau"
+if not luneFs.isFile(MOCKS_FILE) then
+	fatal(`Error: {MOCKS_FILE} not found. Generate/copy roblox_mocks.luau first.`)
+end
+
+local mocksSource = luneFs.readFile(MOCKS_FILE)
+local okCompileMocks, mocksBytecodeOrErr = pcall(function()
+	return luneLuau.compile(mocksSource)
+end)
+if not okCompileMocks then
+	fatal(`Failed to compile {MOCKS_FILE}`, mocksBytecodeOrErr)
+end
+
+local function fallbackNewproxy(withMetatable: boolean?)
+	local obj = {}
+	if withMetatable then
+		return setmetatable(obj, {})
+	end
+	return obj
+end
+
+local mocksEnv = {
+	-- basics
+	assert = assert,
+	error = error,
+	pcall = pcall,
+	xpcall = xpcall,
+
+	tostring = tostring,
+	tonumber = tonumber,
+	type = type,
+	typeof = typeof,
+
+	pairs = pairs,
+	ipairs = ipairs,
+	next = next,
+	select = select,
+
+	getmetatable = getmetatable,
+	setmetatable = setmetatable,
+	rawequal = rawequal,
+	rawget = rawget,
+	rawset = rawset,
+
+	-- libs
+	math = math,
+	string = string,
+	table = table,
+	os = os,
+	utf8 = utf8,
+	bit32 = bit32,
+	debug = debug,
+
+	-- IMPORTANT: provide task
+	task = luneTask,
+	wait = luneTask.wait,
+
+	warn = warn,
+	print = print,
+
+	-- newproxy may not exist in Lune
+	newproxy = newproxy or fallbackNewproxy,
+}
+
+local mocksChunk = luneLuau.load(mocksBytecodeOrErr, {
+	environment = mocksEnv,
+	chunkname = MOCKS_FILE,
+})
+
+local okRunMocks, mocksOrErr = xpcall(mocksChunk, traceback)
+if not okRunMocks then
+	fatal("Failed to execute mocks module (roblox_mocks.luau).", mocksOrErr)
+end
+local mocks = mocksOrErr
+
+-- -----------------------------------------------------------------------------
+-- 2. Load place
+-- -----------------------------------------------------------------------------
+
+local PLACE_FILE = "test.rbxl"
+if not luneFs.isFile(PLACE_FILE) then
+	fatal(`Error: {PLACE_FILE} not found. Build your project before running tests.`)
+end
+
+local placeFileContents = luneFs.readFile(PLACE_FILE)
+local gameReal = luneRoblox.deserializePlace(placeFileContents)
+
+-- -----------------------------------------------------------------------------
+-- 3. Sandbox globals
+-- -----------------------------------------------------------------------------
+
+local hostTypeof = typeof
+
+local function tryUnwrap(value: any): any?
+	if value == nil then
+		return nil
 	end
 
-	if typeof(moduleScript) ~= "Instance" or not moduleScript:IsA("ModuleScript") then
-		error("Attempted to require a non-ModuleScript: " .. tostring(moduleScript))
+	local tv = type(value)
+	if tv ~= "table" and hostTypeof(value) ~= "userdata" then
+		return nil
 	end
 
-	if loadedModules[moduleScript] then
-		local cached = loadedModules[moduleScript]
-		if cached == NULL_SENTINEL then
+	local ok, real = pcall(function()
+		return value[mocks.REAL_INSTANCE]
+	end)
+
+	if ok and real ~= nil and hostTypeof(real) == "Instance" then
+		return real
+	end
+
+	return nil
+end
+
+-- Make wrappers look like Instances to code that does typeof(x) == "Instance"
+local function sandboxTypeof(value: any): string
+	local unwrapped = tryUnwrap(value)
+	if unwrapped ~= nil then
+		return "Instance"
+	end
+
+	if type(value) == "table" and rawget(value, "__isRobloxMockInstance") == true then
+		return "Instance"
+	end
+
+	return hostTypeof(value)
+end
+
+-- Wrap Instance.new so newly created instances are also proxies.
+-- This prevents "real Instance" vs "proxy Instance" mixing when setting Parent.
+local RealInstanceLib = luneRoblox.Instance
+local Instance = setmetatable({}, { __index = RealInstanceLib })
+Instance.new = function(className: string, parent: any?)
+	local inst = RealInstanceLib.new(className)
+	local wrapped = mocks.wrapInstance(inst)
+	if parent ~= nil then
+		wrapped.Parent = parent
+	end
+	return wrapped
+end
+
+local game = mocks.wrapInstance(gameReal)
+
+local baseEnv = {
+	-- Roblox datatypes from Lune
+	CFrame = luneRoblox.CFrame,
+	Vector3 = luneRoblox.Vector3,
+	Vector2 = luneRoblox.Vector2,
+	Color3 = luneRoblox.Color3,
+	UDim2 = luneRoblox.UDim2,
+	UDim = luneRoblox.UDim,
+	Instance = Instance,
+
+	Ray = luneRoblox.Ray,
+	Rect = luneRoblox.Rect,
+	Region3 = luneRoblox.Region3,
+	Region3int16 = luneRoblox.Region3int16,
+	Vector2int16 = luneRoblox.Vector2int16,
+	Vector3int16 = luneRoblox.Vector3int16,
+	BrickColor = luneRoblox.BrickColor,
+	PathWaypoint = luneRoblox.PathWaypoint,
+	Random = luneRoblox.Random,
+	TweenInfo = luneRoblox.TweenInfo,
+	Axes = luneRoblox.Axes,
+	Faces = luneRoblox.Faces,
+	NumberRange = luneRoblox.NumberRange,
+	NumberSequence = luneRoblox.NumberSequence,
+	NumberSequenceKeypoint = luneRoblox.NumberSequenceKeypoint,
+	ColorSequence = luneRoblox.ColorSequence,
+	ColorSequenceKeypoint = luneRoblox.ColorSequenceKeypoint,
+	PhysicalProperties = luneRoblox.PhysicalProperties,
+
+	-- Standard Lua/Luau
+	assert = assert,
+	error = error,
+	getmetatable = getmetatable,
+	setmetatable = setmetatable,
+	ipairs = ipairs,
+	pairs = pairs,
+	next = next,
+	pcall = pcall,
+	xpcall = xpcall,
+	print = print,
+	warn = warn,
+	rawequal = rawequal,
+	rawget = rawget,
+	rawset = rawset,
+	select = select,
+	tonumber = tonumber,
+	tostring = tostring,
+	type = type,
+	typeof = sandboxTypeof,
+	coroutine = coroutine,
+
+	unpack = table.unpack,
+	_VERSION = _VERSION,
+
+	-- libs
+	math = math,
+	table = table,
+	string = string,
+	bit32 = bit32,
+	utf8 = utf8,
+	os = os,
+	debug = debug,
+
+	-- scheduler
+	task = luneTask,
+	wait = luneTask.wait,
+	delay = luneTask.delay,
+	spawn = luneTask.spawn,
+	tick = os.clock,
+
+	-- mocks
+	Enum = mocks.MockEnum,
+	newproxy = newproxy or fallbackNewproxy,
+
+	game = game,
+}
+
+local sharedG = {}
+baseEnv._G = sharedG
+baseEnv.shared = sharedG
+
+-- workspace global like Roblox
+baseEnv.workspace = baseEnv.game:GetService("Workspace")
+
+-- -----------------------------------------------------------------------------
+-- 4. require() implementation with better errors
+-- -----------------------------------------------------------------------------
+
+local moduleCache = {}
+local MODULE_RETURNS_NIL = {}
+local requireStack = {}
+
+local function safeFullName(inst)
+	local ok, name = pcall(function()
+		return inst:GetFullName()
+	end)
+	return ok and name or tostring(inst)
+end
+
+local function formatRequireStack()
+	if #requireStack == 0 then
+		return ""
+	end
+	local lines = { "Require stack (most recent last):" }
+	for i, inst in ipairs(requireStack) do
+		lines[#lines + 1] = `  {i}: {safeFullName(inst)}`
+	end
+	return table.concat(lines, "\n")
+end
+
+local function tracebackWithRequireStack(err)
+	local tb = traceback(err)
+	local req = formatRequireStack()
+	if req ~= "" then
+		tb = tb .. "\n\n" .. req
+	end
+	return tb
+end
+
+local envRequire
+
+local function createEnv(scriptInstance)
+	-- Use table.clone to ensure all globals are directly present.
+	local env = table.clone(baseEnv)
+
+	env.script = mocks.wrapInstance(scriptInstance)
+	env.require = function(module)
+		return envRequire(module)
+	end
+	return env
+end
+
+envRequire = function(moduleTarget: any)
+	local realInstance = tryUnwrap(moduleTarget) or moduleTarget
+
+	if sandboxTypeof(realInstance) ~= "Instance" or not realInstance:IsA("ModuleScript") then
+		error(`Attempted to require a non-ModuleScript: {tostring(realInstance)} ({sandboxTypeof(realInstance)})`, 2)
+	end
+
+	local cached = moduleCache[realInstance]
+	if cached ~= nil then
+		if cached == MODULE_RETURNS_NIL then
 			return nil
 		end
 		return cached
 	end
 
-	local env = setmetatable({}, { __index = _G })
-	env.game = GameProxy
-	env.workspace = GameProxy.Workspace
-	env.script = smartWrap(moduleScript)
-	env.Enum = mocks.MockEnum
-	env.task = task
-	env.tick = os.clock
-	env.require = function(target)
-		local realTarget = target
-		if typeof(target) == "userdata" then
-			local real = target[mocks.REAL_INSTANCE]
-			if real then
-				realTarget = real
-			end
+	-- Circular dependency check
+	for _, m in ipairs(requireStack) do
+		if m == realInstance then
+			error("Recursive require detected: " .. safeFullName(realInstance), 2)
 		end
-		if typeof(realTarget) == "Instance" and realTarget:IsA("ModuleScript") then
-			return requireInstance(realTarget)
+	end
+	table.insert(requireStack, realInstance)
+
+	local function cleanup()
+		if requireStack[#requireStack] == realInstance then
+			table.remove(requireStack)
 		end
-		return require(target)
 	end
 
-	local bytecode = luau.compile(moduleScript.Source)
-	local fn = luau.load(bytecode, { environment = env })
-	local result = fn()
+	-- Compile
+	local okCompile, bytecodeOrErr = pcall(function()
+		return luneLuau.compile(realInstance.Source)
+	end)
+	if not okCompile then
+		local msg = ("Failed to compile %s:\n%s"):format(safeFullName(realInstance), tostring(bytecodeOrErr))
+		cleanup()
+		error(msg, 2)
+	end
 
-	loadedModules[moduleScript] = if result == nil then NULL_SENTINEL else result
+	local env = createEnv(realInstance)
+	local fn = luneLuau.load(bytecodeOrErr, {
+		environment = env,
+		chunkname = safeFullName(realInstance),
+	})
+
+	-- Run with traceback
+	local okRun, resultOrTrace = xpcall(fn, tracebackWithRequireStack)
+	cleanup()
+
+	if not okRun then
+		-- already contains traceback + require stack
+		error(resultOrTrace, 0)
+	end
+
+	local result = resultOrTrace
+	if hostTypeof(result) == "Instance" then
+		result = mocks.wrapInstance(result)
+	end
+
+	moduleCache[realInstance] = (result == nil and MODULE_RETURNS_NIL or result)
 	return result
 end
 
--- 5. Execution
-local ReplicatedStorage = gameReal:GetService("ReplicatedStorage")
-local TestEZModule = ReplicatedStorage.DevPackages.TestEZ
+-- -----------------------------------------------------------------------------
+-- 5. Find TestEZ (robustly resolve Folder -> init/index)
+-- -----------------------------------------------------------------------------
 
-if not TestEZModule then
-	error("TestEZ module not found!")
+local function resolveToModuleScript(obj)
+	if obj == nil then
+		return nil
+	end
+	obj = tryUnwrap(obj) or obj
+	if sandboxTypeof(obj) ~= "Instance" then
+		return nil
+	end
+
+	if obj:IsA("ModuleScript") then
+		return obj
+	end
+
+	if obj:IsA("Folder") then
+		local init = obj:FindFirstChild("init")
+		if init and init:IsA("ModuleScript") then
+			return init
+		end
+		local index = obj:FindFirstChild("index")
+		if index and index:IsA("ModuleScript") then
+			return index
+		end
+
+		local src = obj:FindFirstChild("src")
+		local resolved = resolveToModuleScript(src)
+		if resolved then
+			return resolved
+		end
+
+		local out = obj:FindFirstChild("out")
+		resolved = resolveToModuleScript(out)
+		if resolved then
+			return resolved
+		end
+
+		for _, child in ipairs(obj:GetChildren()) do
+			if child:IsA("ModuleScript") then
+				return child
+			end
+		end
+	end
+
+	return nil
 end
 
-local TestEZ = requireInstance(TestEZModule)
+local function findTestEZ()
+	local ReplicatedStorage = gameReal:GetService("ReplicatedStorage")
 
-_G.game = GameProxy
-_G.workspace = GameProxy.Workspace
-_G.Enum = mocks.MockEnum
+	-- rbxts_include
+	local include = ReplicatedStorage:FindFirstChild("rbxts_include")
+	if include then
+		local nodeModules = include:FindFirstChild("node_modules")
+		if nodeModules then
+			local rbxts = nodeModules:FindFirstChild("@rbxts")
+			if rbxts then
+				local pkg = rbxts:FindFirstChild("testez")
+				if pkg then
+					return resolveToModuleScript(pkg)
+				end
+			end
+		end
+	end
 
-local results = TestEZ.TestBootstrap:run({
-	GameProxy.ReplicatedStorage.Examples.TestEZ,
-})
+	-- Wally/Packages
+	local packagesFolders = { "Packages", "DevPackages" }
+	for _, folderName in ipairs(packagesFolders) do
+		local packages = ReplicatedStorage:FindFirstChild(folderName)
+		if packages then
+			local direct = packages:FindFirstChild("TestEZ") or packages:FindFirstChild("testez")
+			local resolved = resolveToModuleScript(direct)
+			if resolved then
+				return resolved
+			end
 
-if results.failureCount > 0 or #results.errors > 0 then
-	process.exit(1)
+			local indexFolder = packages:FindFirstChild("_Index")
+			if indexFolder then
+				for _, child in ipairs(indexFolder:GetChildren()) do
+					if string.lower(child.Name):find("testez") then
+						resolved = resolveToModuleScript(child)
+						if resolved then
+							return resolved
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+-- -----------------------------------------------------------------------------
+-- 6. Run tests
+-- -----------------------------------------------------------------------------
+
+local function run()
+	print("--> Starting Test Runner...")
+
+	local testEZModule = findTestEZ()
+	if not testEZModule then
+		fatal("Could not find TestEZ module in ReplicatedStorage. Ensure packages are installed and built.")
+	end
+
+	local TestEZ = envRequire(testEZModule)
+	if type(TestEZ) ~= "table" then
+		fatal("TestEZ module did not return a table. Package may be broken.")
+	end
+
+	local TestBootstrap = TestEZ.TestBootstrap
+	if not TestBootstrap then
+		fatal("TestEZ.TestBootstrap not found. TestEZ layout/version may have changed.")
+	end
+
+	-- test roots
+	local testRoots = {}
+
+	local function addRoot(serviceName: string, name: string)
+		local service = baseEnv.game:GetService(serviceName)
+		local folder = service and service:FindFirstChild(name)
+		if folder then
+			table.insert(testRoots, folder)
+		end
+	end
+
+	addRoot("ReplicatedStorage", "Examples")
+
+	if #testRoots == 0 then
+		warn("No 'TS' or 'Tests' folders found. Nothing to test.")
+		luneProcess.exit(0)
+	end
+
+	print(`--> Found {#testRoots} test root(s). Running tests...`)
+
+	local reporter = nil
+	if type(TestEZ.Reporters) == "table" then
+		reporter = TestEZ.Reporters.TextReporter
+	end
+
+	local ok, resultsOrErr = xpcall(function()
+		if reporter then
+			return TestBootstrap:run(testRoots, reporter)
+		end
+		return TestBootstrap:run(testRoots)
+	end, tracebackWithRequireStack)
+
+	if not ok then
+		fatal("TestEZ Critical Error:", resultsOrErr)
+	end
+
+	local results = resultsOrErr
+	if results and type(results) == "table" then
+		if results.failureCount and results.failureCount > 0 then
+			print(`\nFAILED: {results.failureCount} test(s) failed.`)
+			luneProcess.exit(1)
+		end
+		if results.errors and #results.errors > 0 then
+			print(`\nERROR: {#results.errors} error(s) occurred during testing.`)
+			for _, err in ipairs(results.errors) do
+				print(err)
+			end
+			luneProcess.exit(1)
+		end
+	end
+
+	print("\n--> All tests passed!")
+	luneProcess.exit(0)
+end
+
+local ok, err = xpcall(run, tracebackWithRequireStack)
+if not ok then
+	fatal("Unhandled test runner error.", err)
 end
