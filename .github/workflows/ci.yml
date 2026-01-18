@@ -1,0 +1,21 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rokit
+        uses: roblox-ts/setup-rokit@v0.1.2
+
+      - name: Install Dependencies
+        run: wally install
+
+      - name: Build
+        run: rojo build default.project.json -o test.rbxl
+
+      - name: Run Tests
+        run: lune run tests/run_tests.luau

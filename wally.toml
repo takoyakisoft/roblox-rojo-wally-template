@@ -8,16 +8,9 @@ private = true
 [dependencies]
 React = "jsdotlua/react@*"
 ReactRoblox = "jsdotlua/react-roblox@*"
-Satchel = "ryanlua/satchel@*"
-WindShake = "boatbomber/windshake@*"
-ByteNet = "ffrostflame/bytenet@*"
-Promise = "evaera/promise@*"
-Janitor = "howmanysmall/janitor@*"
 
 [server-dependencies]
-Cmdr = "evaera/cmdr@*"
 ProfileStore = "lm-loleris/profilestore@*"
 
 [dev-dependencies]
-UILabs = "pepeeltoro41/ui-labs@*"
 TestEZ = "roblox/testez@*"

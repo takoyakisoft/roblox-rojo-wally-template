@@ -1,3 +1,7 @@
+[English](README.md) [日本語](README.ja.md)
+
+![CI](https://github.com/takoyakisoft/roblox-rojo-wally-template/actions/workflows/ci.yml/badge.svg)
+
 # これは何？
 
 Roblox（Luau）でVSCodeを使ったモダンな開発環境のテンプレートです。
@@ -65,7 +69,6 @@ wally-package-types -s sourcemap.json DevPackages/
 > 初めてならRoblox Studioを起動して、Install Roblox Studio Plugin
 
 `▶ default.project.json`
-
 
 ## Roblox StudioからRojo
 

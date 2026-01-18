@@ -1,5 +1,7 @@
 [English](README.md) [日本語](README.ja.md)
 
+![CI](https://github.com/takoyakisoft/roblox-rojo-wally-template/actions/workflows/ci.yml/badge.svg)
+
 # What is this?
 
 This is a template for a modern development environment for Roblox (Luau) using VSCode.
@@ -67,7 +69,6 @@ Select `Rojo: Open Menu`
 > If this is your first time, launch Roblox Studio and install the Roblox Studio Plugin.
 
 Select `▶ default.project.json`
-
 
 ## Rojo from Roblox Studio
 
