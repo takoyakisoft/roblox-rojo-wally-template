@@ -1,6 +1,6 @@
 -- Auto-generated Roblox API mocks for Studio
 -- Includes WaitForChild polyfill
--- Generated on: 2026-01-18 20:45:40
+-- Generated on: 2026-01-18 21:04:45
 -- WaitForChild Polyfill Implementation
 local function createWaitForChildPolyfill()
 	return function(parent, childName, timeout)
@@ -18,22 +18,25 @@ local function createWaitForChildPolyfill()
 			return child
 		end
 
-		local startTime = tick()
+		local startTime = os.clock()
 		local timeoutSeconds = timeout or 30
 		local foundChild = nil
 		local connection
-		connection = parent.ChildAdded:Connect(function(child)
-			if child.Name == childName then
-				foundChild = child
-				if connection then
-					connection:Disconnect()
-					connection = nil
+		local childAdded = (parent :: any).ChildAdded
+		if childAdded and type(childAdded) == "table" and type(childAdded.Connect) == "function" then
+			connection = childAdded:Connect(function(child)
+				if child.Name == childName then
+					foundChild = child
+					if connection then
+						connection:Disconnect()
+						connection = nil
+					end
 				end
-			end
-		end)
+			end)
+		end
 
 		while not foundChild do
-			if timeoutSeconds > 0 and (tick() - startTime) >= timeoutSeconds then
+			if timeoutSeconds > 0 and (os.clock() - startTime) >= timeoutSeconds then
 				if connection then
 					connection:Disconnect()
 					connection = nil
@@ -60,9 +63,25 @@ end
 local serviceMocks = {}
 serviceMocks.BadgeService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -71,24 +90,46 @@ serviceMocks.BadgeService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "BadgeService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "BadgeService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.CoreGui = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -97,24 +138,46 @@ serviceMocks.CoreGui = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "CoreGui",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "CoreGui",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.GroupService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -123,24 +186,46 @@ serviceMocks.GroupService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "GroupService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "GroupService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.ReplicatedFirst = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -149,24 +234,46 @@ serviceMocks.ReplicatedFirst = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "ReplicatedFirst",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "ReplicatedFirst",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.StarterPack = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -175,24 +282,46 @@ serviceMocks.StarterPack = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "StarterPack",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "StarterPack",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.Chat = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -201,24 +330,46 @@ serviceMocks.Chat = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "Chat",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "Chat",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.ServerStorage = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -227,32 +378,54 @@ serviceMocks.ServerStorage = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "ServerStorage",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "ServerStorage",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.Workspace = {
-	FindFirstChild = function(...) end,
-	GetDescendants = function(...) end,
-	GetChildren = function(...) end,
-	FindFirstAncestorOfClass = function(...) end,
 	Terrain = {
 		CellCount = 512,
 		MaxCellSize = 4,
+	},
+	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
 	},
 	CurrentCamera = {
 		CFrame = nil,
 		FieldOfView = 70,
 	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	GetDescendants = function(...) end,
+	GetChildren = function(...) end,
+	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -261,24 +434,46 @@ serviceMocks.Workspace = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "Workspace",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "Workspace",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.StarterGui = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -287,24 +482,46 @@ serviceMocks.StarterGui = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "StarterGui",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "StarterGui",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.TeleportService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -313,32 +530,54 @@ serviceMocks.TeleportService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "TeleportService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "TeleportService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.Players = {
-	FindFirstChild = function(...) end,
 	PlayerRemoving = {
 		Connect = function(...) end,
 	},
 	PlayerAdded = {
 		Connect = function(...) end,
 	},
+	Archivable = true,
+	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	GetPlayers = function(...) end,
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
-	Archivable = true,
-	GetPlayers = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -351,24 +590,46 @@ serviceMocks.Players = {
 	},
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "Players",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "Players",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.AssetService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -377,24 +638,46 @@ serviceMocks.AssetService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "AssetService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "AssetService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.PathfindingService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -403,24 +686,46 @@ serviceMocks.PathfindingService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "PathfindingService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "PathfindingService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.LeaderboardService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -429,67 +734,111 @@ serviceMocks.LeaderboardService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "LeaderboardService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "LeaderboardService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.RunService = {
-	GetAttribute = function(...) end,
-	Stepped = {
-		Connect = function(...) end,
-		Wait = function(...) end,
-	},
-	Heartbeat = {
-		Connect = function(...) end,
-		Wait = function(...) end,
-	},
 	FindFirstChild = function(...) end,
 	IsClient = function(...) end,
-	IsRunning = function(...) end,
-	IsRunMode = function(...) end,
 	GetDescendants = function(...) end,
-	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
 	IsStudio = function(...) end,
 	IsServer = function(...) end,
-	RobloxLocked = false,
-	IsDescendantOf = function(...) end,
-	SetAttribute = function(...) end,
 	RenderStepped = {
 		Connect = function(...) end,
 		Wait = function(...) end,
 	},
 	Destroy = function(...) end,
-	Archivable = true,
-	GetFullName = function(...) end,
+	GetAttribute = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
-	Name = "RunService",
-	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	GetAttributeChangedSignal = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
+	Stepped = {
+		Connect = function(...) end,
+		Wait = function(...) end,
+	},
+	ClassName = "RunService",
+	GetAttributes = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	GetChildren = function(...) end,
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	IsDescendantOf = function(...) end,
+	Archivable = true,
+	Heartbeat = {
+		Connect = function(...) end,
+		Wait = function(...) end,
+	},
+	GetFullName = function(...) end,
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	IsRunMode = function(...) end,
+	IsRunning = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
+	RobloxLocked = false,
+	FindFirstChildOfClass = function(...) end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
-	ClassName = "RunService",
+	SetAttribute = function(...) end,
 	FindFirstAncestor = function(...) end,
-	GetAttributes = function(...) end,
-	IsA = function(...) end,
-	FindFirstChildOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
+	Name = "RunService",
 }
 serviceMocks.VoiceChatService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -498,27 +847,49 @@ serviceMocks.VoiceChatService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "VoiceChatService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "VoiceChatService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.TestService = {
-	FindFirstChild = function(...) end,
 	Checkpoint = function(...) end,
+	Message = function(...) end,
+	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	Error = function(...) end,
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
-	Message = function(...) end,
-	Error = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -527,24 +898,46 @@ serviceMocks.TestService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "TestService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "TestService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.ProximityPromptService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -553,24 +946,46 @@ serviceMocks.ProximityPromptService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "ProximityPromptService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "ProximityPromptService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.Lighting = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -579,24 +994,46 @@ serviceMocks.Lighting = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "Lighting",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "Lighting",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.ServerScriptService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -605,24 +1042,46 @@ serviceMocks.ServerScriptService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "ServerScriptService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "ServerScriptService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.AvatarEditorService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -631,24 +1090,46 @@ serviceMocks.AvatarEditorService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "AvatarEditorService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "AvatarEditorService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.NetworkService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -657,24 +1138,49 @@ serviceMocks.NetworkService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "NetworkService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "NetworkService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.MarketplaceService = {
+	PromptPurchase = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	Name = "MarketplaceService",
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	PlayerOwnsAsset = function(...) end,
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -683,24 +1189,53 @@ serviceMocks.MarketplaceService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
-	Name = "MarketplaceService",
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
+	GetProductInfo = function(self, assetId)
+		return {
+			Name = "Mock Asset",
+			Description = "Mock Description",
+			Creator = { Name = "Mock Creator" },
+			PriceInRobux = 0,
+		}
+	end,
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "MarketplaceService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.StudioService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -709,24 +1244,46 @@ serviceMocks.StudioService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "StudioService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "StudioService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.MessagingService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -735,24 +1292,46 @@ serviceMocks.MessagingService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "MessagingService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "MessagingService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.SocialService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -761,24 +1340,46 @@ serviceMocks.SocialService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "SocialService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "SocialService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.UserInputService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -787,28 +1388,54 @@ serviceMocks.UserInputService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "UserInputService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "UserInputService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.HttpService = {
+	JSONDecode = function(self, str)
+		return HttpService:JSONDecode(str)
+	end,
+	GetAsync = function(...) end,
 	PostAsync = function(...) end,
 	FindFirstChild = function(...) end,
-	GetAsync = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	JSONEncode = function(self, obj)
+		return HttpService:JSONEncode(obj)
+	end,
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
-	JSONEncode = function(...) end,
-	JSONDecode = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -817,24 +1444,46 @@ serviceMocks.HttpService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "HttpService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "HttpService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.CollectionService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -843,24 +1492,46 @@ serviceMocks.CollectionService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "CollectionService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "CollectionService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.StarterPlayer = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -869,24 +1540,46 @@ serviceMocks.StarterPlayer = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "StarterPlayer",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "StarterPlayer",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.GuiService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -895,24 +1588,46 @@ serviceMocks.GuiService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "GuiService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "GuiService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.GamePassService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -921,24 +1636,46 @@ serviceMocks.GamePassService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "GamePassService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "GamePassService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.LocalizationService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -947,24 +1684,46 @@ serviceMocks.LocalizationService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "LocalizationService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "LocalizationService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.SoundService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -973,24 +1732,46 @@ serviceMocks.SoundService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "SoundService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "SoundService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.InsertService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -999,24 +1780,46 @@ serviceMocks.InsertService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "InsertService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "InsertService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.MemoryStoreService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1025,26 +1828,48 @@ serviceMocks.MemoryStoreService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "MemoryStoreService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "MemoryStoreService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.DataStoreService = {
+	GetGlobalDataStore = function(...) end,
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	GetDataStore = function(...) end,
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
-	GetGlobalDataStore = function(...) end,
-	GetDataStore = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1053,24 +1878,46 @@ serviceMocks.DataStoreService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "DataStoreService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "DataStoreService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.FriendService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1079,24 +1926,46 @@ serviceMocks.FriendService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "FriendService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "FriendService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.Teams = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1105,24 +1974,46 @@ serviceMocks.Teams = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "Teams",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "Teams",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.ContextActionService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1131,24 +2022,46 @@ serviceMocks.ContextActionService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "ContextActionService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "ContextActionService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.PointsService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1157,24 +2070,46 @@ serviceMocks.PointsService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "PointsService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "PointsService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.TweenService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1183,24 +2118,46 @@ serviceMocks.TweenService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "TweenService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "TweenService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.PhysicsService = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1209,24 +2166,46 @@ serviceMocks.PhysicsService = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "PhysicsService",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "PhysicsService",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 serviceMocks.ReplicatedStorage = {
 	FindFirstChild = function(...) end,
+	DescendantAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	DescendantRemoving = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	GetDescendants = function(...) end,
 	GetChildren = function(...) end,
 	FindFirstAncestorOfClass = function(...) end,
+	ChildRemoved = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
+	ChildAdded = {
+		Wait = function(...) end,
+		Connect = function(...) end,
+	},
 	RobloxLocked = false,
 	IsDescendantOf = function(...) end,
 	SetAttribute = function(...) end,
@@ -1235,17 +2214,23 @@ serviceMocks.ReplicatedStorage = {
 	Archivable = true,
 	GetFullName = function(...) end,
 	WaitForChild = createWaitForChildPolyfill(),
-	FindFirstChildWhichIsA = function(...) end,
+	FindFirstChildWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	Name = "ReplicatedStorage",
 	GetAttributeChangedSignal = function(...) end,
 	GetPropertyChangedSignal = function(...) end,
-	FindFirstAncestorWhichIsA = function(...) end,
+	FindFirstAncestorWhichIsA = function(self, className)
+		return self.ClassName == className
+	end,
 	IsAncestorOf = function(...) end,
 	Clone = function(...) end,
 	ClassName = "ReplicatedStorage",
 	FindFirstAncestor = function(...) end,
 	GetAttributes = function(...) end,
-	IsA = function(...) end,
+	IsA = function(self, className)
+		return self.ClassName == className
+	end,
 	FindFirstChildOfClass = function(...) end,
 }
 local REAL_INSTANCE = newproxy()

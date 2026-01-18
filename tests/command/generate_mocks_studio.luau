@@ -102,12 +102,21 @@ local INSTANCE_PROPERTIES = {
 	"RobloxLocked",
 }
 
+-- Common Instance Events
+local INSTANCE_EVENTS = {
+	"ChildAdded",
+	"ChildRemoved",
+	"DescendantAdded",
+	"DescendantRemoving",
+}
+
 -- WaitForChild Polyfill Implementation
 local function createWaitForChildPolyfill()
 	return function(parent, childName, timeout)
 		-- Argument Validation
-		if typeof(parent) ~= "Instance" then
-			error("WaitForChild: parent must be an Instance", 2)
+		-- Relaxed check for mock environment
+		if typeof(parent) ~= "Instance" and type(parent) ~= "table" and type(parent) ~= "userdata" then
+			error("WaitForChild: parent must be an Instance, table, or userdata", 2)
 		end
 
 		if type(childName) ~= "string" then
@@ -121,27 +130,33 @@ local function createWaitForChildPolyfill()
 		end
 
 		-- Timeout setup
-		local startTime = tick()
+		local startTime = os.clock()
 		local timeoutSeconds = timeout or 30
 
-		-- Listen for ChildAdded
+		-- Listen for ChildAdded (if available)
 		local foundChild = nil
 		local connection
-		connection = parent.ChildAdded:Connect(function(child)
-			if child.Name == childName then
-				foundChild = child
-				if connection then
-					connection:Disconnect()
-					connection = nil
+		local childAdded = (parent :: any).ChildAdded
+		if childAdded and type(childAdded) == "table" and type(childAdded.Connect) == "function" then
+			connection = childAdded:Connect(function(child)
+				if child.Name == childName then
+					foundChild = child
+					if connection then
+						connection:Disconnect()
+						connection = nil
+					end
 				end
-			end
-		end)
+			end)
+		end
 
 		-- Wait until child is found
 		while not foundChild do
 			-- Timeout check
-			if timeoutSeconds > 0 and (tick() - startTime) >= timeoutSeconds then
-				connection:Disconnect()
+			if timeoutSeconds > 0 and (os.clock() - startTime) >= timeoutSeconds then
+				if connection then
+					connection:Disconnect()
+					connection = nil
+				end
 				return nil
 			end
 
@@ -172,12 +187,15 @@ local function generateServiceMock(serviceName)
 	for _, method in ipairs(INSTANCE_METHODS) do
 		if method == "WaitForChild" then
 			mock[method] = createWaitForChildPolyfill()
+		elseif method == "IsA" then
+			mock[method] = function(_, className)
+				return mock.ClassName == className
+			end
 		else
 			mock[method] = function() end
 		end
 	end
 
-	-- Add common properties
 	-- Add common properties
 	for _, prop in ipairs(INSTANCE_PROPERTIES) do
 		if prop == "Parent" then
@@ -189,6 +207,21 @@ local function generateServiceMock(serviceName)
 		else
 			mock[prop] = serviceName == "Workspace" and "Workspace" or serviceName
 		end
+	end
+
+	-- Add common events
+	for _, event in ipairs(INSTANCE_EVENTS) do
+		mock[event] = {
+			Connect = function()
+				return {
+					Disconnect = function() end,
+					Connected = true,
+				}
+			end,
+			Wait = function()
+				task.wait(99999)
+			end,
+		}
 	end
 
 	-- Service-specific implementation
@@ -282,10 +315,10 @@ local function generateServiceMock(serviceName)
 			return mock.GetDataStore()
 		end
 	elseif serviceName == "HttpService" then
-		mock.JSONEncode = function(obj)
+		mock.JSONEncode = function(_, obj)
 			return HttpService:JSONEncode(obj)
 		end
-		mock.JSONDecode = function(str)
+		mock.JSONDecode = function(_, str)
 			return HttpService:JSONDecode(str)
 		end
 		mock.GetAsync = function()
@@ -294,6 +327,19 @@ local function generateServiceMock(serviceName)
 		mock.PostAsync = function()
 			return ""
 		end
+	elseif serviceName == "MarketplaceService" then
+		mock.GetProductInfo = function(_, assetId)
+			return {
+				Name = "Mock Asset",
+				Description = "Mock Description",
+				Creator = { Name = "Mock Creator" },
+				PriceInRobux = 0,
+			}
+		end
+		mock.PlayerOwnsAsset = function()
+			return true
+		end
+		mock.PromptPurchase = function() end
 	elseif serviceName == "Workspace" then
 		mock.CurrentCamera = {
 			CFrame = CFrame.new(),
@@ -425,8 +471,9 @@ local function outputMocksToFile()
 -- WaitForChild Polyfill Implementation
 local function createWaitForChildPolyfill()
     return function(parent, childName, timeout)
-        if typeof(parent) ~= "Instance" then
-            error("WaitForChild: parent must be an Instance", 2)
+        -- Relaxed check for mock environment
+        if typeof(parent) ~= "Instance" and type(parent) ~= "table" and type(parent) ~= "userdata" then
+            error("WaitForChild: parent must be an Instance, table, or userdata", 2)
         end
 
         if type(childName) ~= "string" then
@@ -438,23 +485,33 @@ local function createWaitForChildPolyfill()
             return child
         end
 
-        local startTime = tick()
+        local startTime = os.clock()
         local timeoutSeconds = timeout or 30
         local foundChild = nil
-        local connection = parent.ChildAdded:Connect(function(child)
-            if child.Name == childName then
-                foundChild = child
-                connection:Disconnect()
-            end
-        end)
+        local connection
+        local childAdded = (parent :: any).ChildAdded
+        if childAdded and type(childAdded) == "table" and type(childAdded.Connect) == "function" then
+            connection = childAdded:Connect(function(child)
+                if child.Name == childName then
+                    foundChild = child
+                    if connection then
+                        connection:Disconnect()
+                        connection = nil
+                    end
+                end
+            end)
+        end
 
         while not foundChild do
-            if timeoutSeconds > 0 and (tick() - startTime) >= timeoutSeconds then
-                connection:Disconnect()
+            if timeoutSeconds > 0 and (os.clock() - startTime) >= timeoutSeconds then
+                if connection then
+                    connection:Disconnect()
+                    connection = nil
+                end
                 return nil
             end
 
-            wait(0.1)
+            task.wait(0.1)
             local checkChild = parent:FindFirstChild(childName)
             if checkChild then
                 foundChild = checkChild
@@ -489,6 +546,8 @@ local serviceMocks = {}]]
 				local valStr
 				if k == "WaitForChild" and type(v) == "function" then
 					valStr = "createWaitForChildPolyfill()"
+				elseif k == "IsA" and type(v) == "function" then
+					valStr = "function(self, className) return self.ClassName == className end"
 				else
 					valStr = serializeValue(v, indent .. "  ")
 				end
@@ -507,6 +566,21 @@ local serviceMocks = {}]]
 			local serialized
 			if key == "WaitForChild" and type(value) == "function" then
 				serialized = "createWaitForChildPolyfill()"
+			elseif (key == "IsA" or key:find("WhichIsA$")) and type(value) == "function" then
+				serialized = "function(self, className) return self.ClassName == className end"
+			elseif key == "GetProductInfo" and serviceName == "MarketplaceService" then
+				serialized = [[function(self, assetId)
+    return {
+      Name = "Mock Asset",
+      Description = "Mock Description",
+      Creator = { Name = "Mock Creator" },
+      PriceInRobux = 0,
+    }
+  end]]
+			elseif key == "JSONEncode" and serviceName == "HttpService" then
+				serialized = "function(self, obj) return HttpService:JSONEncode(obj) end"
+			elseif key == "JSONDecode" and serviceName == "HttpService" then
+				serialized = "function(self, str) return HttpService:JSONDecode(str) end"
 			else
 				serialized = serializeValue(value, "  ")
 			end

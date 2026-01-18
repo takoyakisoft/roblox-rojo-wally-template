@@ -90,6 +90,23 @@ The sections are categorized as follows:
 
 Once you've finished editing, run the [package installation](#installing-packages) steps again.
 
+# Testing
+
+This template supports headless testing using [Lune](https://github.com/lune-org/lune) and [TestEZ](https://github.com/Roblox/testez).
+
+The testing environment uses AI-generated Roblox API mocks (`tests/roblox_mocks.luau`) to simulate the Roblox environment in CI. These tests are intended primarily for logic verification and ensuring that basic functionality works as expected in a headless environment.
+
+To run tests locally:
+
+1. Build the test place:
+   ```bash
+   rojo build default.project.json -o test.rbxl
+   ```
+2. Run the test script:
+   ```bash
+   lune run tests/run_tests.luau
+   ```
+
 # References
 
 [How Big Studios Develop on Roblox](https://www.youtube.com/watch?v=IJDg6tRJmHo)

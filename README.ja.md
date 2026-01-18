@@ -92,6 +92,23 @@ wally-package-types -s sourcemap.json DevPackages/
 
 書き終えたら、再度[パッケージのインストール](#パッケージのインストール)を行います。
 
+# テスト
+
+このテンプレートは、[Lune](https://github.com/lune-org/lune) と [TestEZ](https://github.com/Roblox/testez) を使用したヘッドレス環境でのテストをサポートしています。
+
+テスト環境では、CI上での動作を可能にするためにAIによって生成されたRoblox APIモック (`tests/roblox_mocks.luau`) を使用しています。これらのテストは主にロジックの確認を目的としており、ヘッドレス環境での基本的な動作検証を行うためのものです。
+
+ローカルでテストを実行するには：
+
+1. テスト用のプレイスをビルドします：
+   ```bash
+   rojo build default.project.json -o test.rbxl
+   ```
+2. テストスクリプトを実行します：
+   ```bash
+   lune run tests/run_tests.luau
+   ```
+
 # 参考
 
 [How Big Studios Develop on Roblox](https://www.youtube.com/watch?v=IJDg6tRJmHo)
