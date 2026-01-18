@@ -55,7 +55,7 @@ local function smartWrap(instance)
 		-- Intercept GetService to prefer real storage services over empty mocks
 		if key == "GetService" and instance:IsA("DataModel") then
 			return function(_, serviceName)
-				if serviceName == "RunService" or serviceName == "TestService" then
+				if mocks.serviceMocks[serviceName] then
 					return mocks.serviceMocks[serviceName]
 				end
 				return smartWrap(instance:GetService(serviceName))
@@ -101,7 +101,7 @@ local function smartWrap(instance)
 					if key == "IsA" then
 						return false
 					end
-					error(results[1]) -- results is error message string if failed
+					error(results) -- results is error message string if failed
 				end
 				for i, r in ipairs(results) do
 					results[i] = smartWrap(r)
@@ -139,6 +139,8 @@ local GameProxy = smartWrap(gameReal)
 
 -- 4. Module Loader
 local loadedModules = {}
+local NULL_SENTINEL = newproxy()
+
 local function requireInstance(moduleScript)
 	if typeof(moduleScript) == "userdata" then
 		local real = moduleScript[mocks.REAL_INSTANCE]
@@ -152,7 +154,11 @@ local function requireInstance(moduleScript)
 	end
 
 	if loadedModules[moduleScript] then
-		return loadedModules[moduleScript]
+		local cached = loadedModules[moduleScript]
+		if cached == NULL_SENTINEL then
+			return nil
+		end
+		return cached
 	end
 
 	local env = setmetatable({}, { __index = _G })
@@ -180,13 +186,14 @@ local function requireInstance(moduleScript)
 	local fn = luau.load(bytecode, { environment = env })
 	local result = fn()
 
-	loadedModules[moduleScript] = result
+	loadedModules[moduleScript] = if result == nil then NULL_SENTINEL else result
 	return result
 end
 
 -- 5. Execution
 local ReplicatedStorage = gameReal:GetService("ReplicatedStorage")
-local TestEZModule = ReplicatedStorage.DevPackages.TestEZ
+local testezFolder = ReplicatedStorage.rbxts_include.node_modules["@rbxts"].testez
+local TestEZModule = testezFolder:FindFirstChild("init") or testezFolder:FindFirstChild("src")
 
 if not TestEZModule then
 	error("TestEZ module not found!")
@@ -199,7 +206,8 @@ _G.workspace = GameProxy.Workspace
 _G.Enum = mocks.MockEnum
 
 local results = TestEZ.TestBootstrap:run({
-	GameProxy.ReplicatedStorage.Examples.TestEZ,
+	GameProxy.ServerScriptService.TS,
+	GameProxy.ReplicatedStorage.TS,
 })
 
 if results.failureCount > 0 or #results.errors > 0 then

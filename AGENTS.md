@@ -38,7 +38,10 @@ This project is built using native **Luau** for Roblox development. It utilizes 
     - **Lint**: `./scripts/shell/lint.sh src` (uses Selene)
 
 4.  **Run Tests**:
-    - **CI / Headless**: `lune run tests/run_tests.luau` (Runs tests locally using Lune and mocks).
+    - **CI / Headless**:
+      1. Build the place: `rojo build default.project.json -o test.rbxl`
+      2. Run tests: `lune run tests/run_tests.luau`
+      - Or use the wrapper script: `./scripts/shell/test.sh` (builds `test.rbxl` then runs `tests/run_tests.luau`).
     - **In Studio**: Press "Play" to run tests via `src/ServerScriptService/Dev/TestRunner.server.luau` (uses the real Roblox engine).
 
 ## Coding Standards
